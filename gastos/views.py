@@ -1,7 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .models import Gasto
+from .forms import GastoForm
 
 def index(request):
     return render(request, 'index.html')
     
 def gastos_var(request):
-    return render(request, 'gastos_var.html')
+    if request.method == "POST":
+            form = GastoForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("gastos_var")
+    else:
+            form = GastoForm()
+    return render(request, 'gastos_var.html', {"form": form})
