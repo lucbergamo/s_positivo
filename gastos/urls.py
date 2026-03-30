@@ -1,9 +1,9 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .views import index, gastos
+from .views import index, gastos_var
 
 
 urlpatterns = [
     path('', index, name='index'),
-    path('gastos/', gastos, name='gastos'),
+    path('gastos/', gastos_var, name='gastos_var'),
 ]
