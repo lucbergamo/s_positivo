@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models import Sum
 from .models import Gasto
 from django.utils import timezone
 from .forms import GastoForm
@@ -16,8 +17,22 @@ def filtroMesAtual():
     #return {"inicio_mes": inicio_mes, "inicio_prox_mes": inicio_prox_mes}
 
 
+def total_compras_mes_atual():
+    hoje = timezone.now()
+    
+    # Filtra as compras pelo ano e mês atuais
+    resultado = Gasto.objects.filter(
+        data_gasto__year=hoje.year,
+        data_gasto__month=hoje.month
+    ).aggregate(total=Sum('valor')) 
+    
+    # O aggregate retorna um dicionário: {'total': Decimal('0.00')}
+    # Usamos 'or 0' para evitar erro caso não haja compras no mês
+    return resultado['total'] or 0
+
 def index(request):
-    return render(request, 'index.html')
+    soma = total_compras_mes_atual()
+    return render(request, 'index.html', {"soma": round( soma,2)})
     
 def gastos_var(request):
     inicio_mes, inicio_prox_mes = filtroMesAtual()
@@ -31,3 +46,9 @@ def gastos_var(request):
     else:
             form = GastoForm()
     return render(request, 'gastos_var.html', {"form": form, "itens": dados})
+
+def excluir_gasto(request, id):
+    gasto = get_object_or_404(Gasto,id=id)
+    if request.method == "POST": # Por segurança, sempre use POST para deletar
+        gasto.delete()
+        return redirect('gasto_var')

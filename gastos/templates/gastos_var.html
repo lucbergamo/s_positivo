@@ -65,6 +65,7 @@
                     <th scope="col">Data</th>
                     <th scope="col">Classificação</th>
                     <th scope="col">Valor</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -74,6 +75,7 @@
                     <td>{{item.data_gasto|date:"d/m/Y"}}</td>
                     <td>{{item.classificacao}}</td>
                     <td>R$ {{item.valor}}</td>
+                    <td><a href="{% url 'excluir_gasto' item.id %}" >Excluir</a></td>
                   </tr>
                   {% empty %}
                   <tr>
