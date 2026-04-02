@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.db.models import Sum
 from .models import Gasto
 from django.utils import timezone
-from .forms import GastoForm
+from .forms import GastoForm, LoginForms
 
 def filtroMesAtual():
     hoje = timezone.localdate()
@@ -16,6 +16,34 @@ def filtroMesAtual():
     return inicio_mes, inicio_prox_mes
     #return {"inicio_mes": inicio_mes, "inicio_prox_mes": inicio_prox_mes}
 
+def login(request):
+        form = LoginForms()
+
+        if request.method == "POST":
+                form = LoginForms(request.POST)
+                
+                if form.is_valid():
+                        nome=form['nome_login'].value()
+                        senha=form['senha'].value()
+
+                usuario = auth.authenticate(
+                        username=nome,
+                        password=senha
+                )
+
+                if usuario is not None:
+                        auth.login(request, usuario)
+                        messages.success(request, f"{nome} logado com sucesso!")
+                        return redirect('index')
+                else:
+                        messages.error(request, "Usuário ou senha incorreto")
+                        return redirect('login')
+
+        return render(request,'login.html',{"form": form})
+
+def logout(request):
+        auth.logout(request)
+        return redirect('login')
 
 def total_compras_mes_atual():
     hoje = timezone.now()
@@ -31,8 +59,12 @@ def total_compras_mes_atual():
     return resultado['total'] or 0
 
 def index(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
     soma = total_compras_mes_atual()
-    return render(request, 'index.html', {"soma": round( soma,2)})
+    return render(request,'index.html', {"soma": round( soma,2)})
+
     
 def gastos_var(request):
     inicio_mes, inicio_prox_mes = filtroMesAtual()
