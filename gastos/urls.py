@@ -6,7 +6,7 @@ from .views import index, gastos_var, excluir_gasto, login, logout
 urlpatterns = [
     path('', index, name='index'),
     path('gastos/', gastos_var, name='gastos_var'),
-    path('excluir_gasto/<int:id>/', excluir_gasto, name='excluir_gasto'),
+    path('excluir_gasto/<int:pk>/', excluir_gasto, name='excluir_gasto'),
     path('login/', login, name='login'),
     path('logout', logout, name='logout'),
 ]

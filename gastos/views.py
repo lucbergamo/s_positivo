@@ -67,6 +67,9 @@ def index(request):
 
     
 def gastos_var(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
     inicio_mes, inicio_prox_mes = filtroMesAtual()
     dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
     if request.method == "POST":
@@ -76,11 +79,19 @@ def gastos_var(request):
                 messages.success(request, "Registro criado com sucesso!")
                 return redirect("gastos_var")
     else:
-            form = GastoForm()
+        form = GastoForm()
     return render(request, 'gastos_var.html', {"form": form, "itens": dados})
 
-def excluir_gasto(request, id):
-    gasto = get_object_or_404(Gasto,id=id)
+def excluir_gasto(request, pk):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    form = GastoForm
+    inicio_mes, inicio_prox_mes = filtroMesAtual()
+    dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
+    gastoExcluir = get_object_or_404(Gasto,id=pk)
     if request.method == "POST": # Por segurança, sempre use POST para deletar
-        gasto.delete()
-        return redirect('gasto_var')
+        gastoExcluir.delete()
+        messages.success(request, "Registro excluído com sucesso!")
+        return redirect('gastos_var')
+    return render(request, 'gastos_var.html', {"form": form, "itens": dados})

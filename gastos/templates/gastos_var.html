@@ -75,7 +75,14 @@
                     <td>{{item.data_gasto|date:"d/m/Y"}}</td>
                     <td>{{item.classificacao}}</td>
                     <td>R$ {{item.valor}}</td>
-                    <td><a href="{% url 'excluir_gasto' item.id %}" >Excluir</a></td>
+                    <td><form action="{% url 'excluir_gasto' item.id %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                      <button type="submit" 
+                              class="btn btn-link text-danger p-0 m-0" 
+                              onclick="return confirm('Tem certeza que deseja excluir o gasto: {{ item.nome }}?')">
+                          Excluir
+                      </button>
+                  </form></td>
                   </tr>
                   {% empty %}
                   <tr>
