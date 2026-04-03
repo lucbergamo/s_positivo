@@ -250,6 +250,28 @@
   <script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
   <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
 
+  <script>
+function deletarGasto(event, id) {
+    event.preventDefault(); // Impede o link de navegar (GET)
+    
+    if (confirm('Deseja realmente excluir?')) {
+        // Cria um formulário "fantasma" na hora e envia
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/excluir_gasto/${id}/`; // Verifique se sua URL no urls.py segue este padrão
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}'; // O Django injeta o token aqui
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
 
