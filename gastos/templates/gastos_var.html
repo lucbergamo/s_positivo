@@ -73,7 +73,6 @@
                   <tr>
                     <th scope="row">{{item.nome }}</th>
                     <td>{{item.data_gasto|date:"d/m/Y"}}</td>
-                    <td>{{item.classificacao}}</td>
                     <td>R$ {{item.valor}}</td>
                     <td><form action="{% url 'excluir_gasto' item.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}

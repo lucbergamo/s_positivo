@@ -63,7 +63,8 @@ def index(request):
         messages.error(request, 'Usuário não logado')
         return redirect('login')
     soma = total_compras_mes_atual()
-    return render(request,'index.html', {"soma": round( soma,2)})
+    nome_usuario = request.user.get_full_name()
+    return render(request,'index.html', {"soma": round( soma,2), "nome": nome_usuario})
 
     
 def gastos_var(request):
