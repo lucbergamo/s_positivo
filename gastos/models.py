@@ -13,11 +13,11 @@ class Gasto(models.Model):
 
     # id é criado automaticamente pelo Django (AutoField/BigAutoField)
     criado_em = models.DateTimeField(auto_now_add=True)
-    '''criado_por = models.ForeignKey(
+    criado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="gastos_criados",
-    )'''
+    )
 
     nome = models.CharField(max_length=120)
     data_gasto = models.DateField()

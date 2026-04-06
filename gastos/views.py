@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages, auth
 from django.db.models import Sum
 from .models import Gasto
@@ -66,7 +67,7 @@ def index(request):
     nome_usuario = request.user.get_full_name()
     return render(request,'index.html', {"soma": round( soma,2), "nome": nome_usuario})
 
-    
+@login_required   
 def gastos_var(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Usuário não logado')
@@ -76,7 +77,9 @@ def gastos_var(request):
     if request.method == "POST":
             form = GastoForm(request.POST)
             if form.is_valid():
-                form.save()
+                gasto = form.save(commit=False)
+                gasto.criado_por = request.user #incluir campo criado_por do usuário conectado
+                gasto.save()
                 messages.success(request, "Registro criado com sucesso!")
                 return redirect("gastos_var")
     else:
