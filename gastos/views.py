@@ -17,6 +17,35 @@ def filtroMesAtual():
     return inicio_mes, inicio_prox_mes
     #return {"inicio_mes": inicio_mes, "inicio_prox_mes": inicio_prox_mes}
 
+def nomeMesAtual():
+    mes = timezone.now().month
+    ano = timezone.now().year
+    match mes:
+         case 1:
+              return "Janeiro - " + str(ano)
+         case 2:
+                return "Fevereiro - " + str(ano)
+         case 3:
+            return "Março - " + str(ano)
+         case 4:
+            return "Abril - " + str(ano)
+         case 5:
+               return "Maio - " + str(ano)
+         case 6:
+            return "Junho - " + str(ano)
+         case 7:
+            return "Julho - " + str(ano)
+         case 8:
+            return "Agosto - " + str(ano)
+         case 9:
+            return "Setembro - " + str(ano)
+         case 10:
+            return "Outubro - " + str(ano)
+         case 11:
+              return "Novembro - " + str(ano)
+         case 12:
+              return "Dezembro - " + str(ano)
+
 def login(request):
         form = LoginForms()
 
@@ -34,7 +63,6 @@ def login(request):
 
                 if usuario is not None:
                         auth.login(request, usuario)
-                        messages.success(request, f"{nome} logado com sucesso!")
                         return redirect('index')
                 else:
                         messages.error(request, "Usuário ou senha incorreto")
@@ -72,8 +100,12 @@ def gastos_var(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Usuário não logado')
         return redirect('login')
+    
+    mesatual = nomeMesAtual()
+    nome_usuario = request.user.get_full_name()
     inicio_mes, inicio_prox_mes = filtroMesAtual()
     dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
+
     if request.method == "POST":
             form = GastoForm(request.POST)
             if form.is_valid():
@@ -84,7 +116,7 @@ def gastos_var(request):
                 return redirect("gastos_var")
     else:
         form = GastoForm()
-    return render(request, 'gastos_var.html', {"form": form, "itens": dados})
+    return render(request, 'gastos_var.html', {"form": form, "itens": dados, "mesatual": mesatual, "nome": nome_usuario})
 
 def excluir_gasto(request, pk):
     if not request.user.is_authenticated:
