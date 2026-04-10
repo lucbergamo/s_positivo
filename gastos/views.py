@@ -6,6 +6,7 @@ from .models import Gasto
 from django.utils import timezone
 from .forms import GastoForm, LoginForms
 
+# ========== Funções de Data ===============
 def filtroMesAtual():
     hoje = timezone.localdate()
     inicio_mes = hoje.replace(day=1)
@@ -46,6 +47,8 @@ def nomeMesAtual():
          case 12:
               return "Dezembro - " + str(ano)
 
+
+# ========== Funções de Login ===============
 def login(request):
         form = LoginForms()
 
@@ -74,6 +77,8 @@ def logout(request):
         auth.logout(request)
         return redirect('login')
 
+
+# ========== Funções de Relatório ===============
 def total_compras_mes_atual():
     hoje = timezone.now()
     
@@ -87,6 +92,8 @@ def total_compras_mes_atual():
     # Usamos 'or 0' para evitar erro caso não haja compras no mês
     return resultado['total'] or 0
 
+
+# ========== Funções de Navegação ===============
 def index(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Usuário não logado')
@@ -131,3 +138,16 @@ def excluir_gasto(request, pk):
         messages.success(request, "Registro excluído com sucesso!")
         return redirect('gastos_var')
     return render(request, 'gastos_var.html', {"form": form, "itens": dados})
+
+@login_required   
+def gastos_fixos(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    mesatual = nomeMesAtual()
+    nome_usuario = request.user.get_full_name()
+    inicio_mes, inicio_prox_mes = filtroMesAtual()
+    dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
+
+    return render(request, 'gastos_fixos.html', {"itens": dados, "mesatual": mesatual, "nome": nome_usuario})
