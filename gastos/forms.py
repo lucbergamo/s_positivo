@@ -40,6 +40,6 @@ class GastoFixoForm(forms.ModelForm):
         fields = ["nome", "data_compensacao", "classificacao", "valor_provisonado"]
 
         widgets = {
-            "data_compensacao": forms.DateInput(attrs={"type": "date"}),
+            "data_compensacao": forms.NumberInput(attrs={"type": "number"}),
             "valor_provisonado": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
         }
