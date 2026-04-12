@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages, auth
 from django.db.models import Sum
-from .models import Gasto
+from .models import Gasto, Gasto_Fixo
 from django.utils import timezone
-from .forms import GastoForm, LoginForms
+from .forms import GastoForm, LoginForms, GastoFixoForm
 
 # ========== Funções de Data ===============
 def filtroMesAtual():
@@ -151,3 +151,22 @@ def gastos_fixos(request):
     dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
 
     return render(request, 'gastos_fixos.html', {"itens": dados, "mesatual": mesatual, "nome": nome_usuario})
+
+@login_required   
+def novo_gasto_fixo(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    nome_usuario = request.user.get_full_name()
+    if request.method == "POST":
+            form = GastoFixoForm(request.POST)
+            if form.is_valid():
+                gasto = form.save(commit=False)
+                gasto.criado_por = request.user #incluir campo criado_por do usuário conectado
+                gasto.save()
+                messages.success(request, "Gasto Fixo criado com sucesso!")
+                return redirect("gastos_fixos")
+    else:
+        form = GastoFixoForm()
+    return render(request, 'novo_gasto_fixo.html', {"form": form, "nome": nome_usuario})

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Gasto
+from .models import Gasto, Gasto_Fixo
 
 
 class GastoForm(forms.ModelForm):
@@ -34,3 +34,12 @@ class LoginForms(forms.Form):
         )
     )
 
+class GastoFixoForm(forms.ModelForm):
+    class Meta:
+        model = Gasto_Fixo
+        fields = ["nome", "data_compensacao", "classificacao", "valor_provisonado"]
+
+        widgets = {
+            "data_compensacao": forms.DateInput(attrs={"type": "date"}),
+            "valor_provisonado": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+        }

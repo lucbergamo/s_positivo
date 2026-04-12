@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from .views import index, gastos_var, excluir_gasto, login, logout, gastos_fixos
+from .views import index, gastos_var, excluir_gasto, login, logout, gastos_fixos, novo_gasto_fixo
 
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('logout', logout, name='logout'),
     path('gastos_fixos', gastos_fixos, name='gastos_fixos'),
+    path('novo_gasto_fixo', novo_gasto_fixo, name='novo_gasto_fixo'),
 ]
