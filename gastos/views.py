@@ -147,10 +147,8 @@ def gastos_fixos(request):
     
     mesatual = nomeMesAtual()
     nome_usuario = request.user.get_full_name()
-    inicio_mes, inicio_prox_mes = filtroMesAtual()
-    dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
-
-    return render(request, 'gastos_fixos.html', {"itens": dados, "mesatual": mesatual, "nome": nome_usuario})
+    dados = Gasto_Fixo.objects.all()
+    return render(request, 'gastos_fixos.html', { "nome": nome_usuario, "itens": dados})
 
 @login_required   
 def novo_gasto_fixo(request):
@@ -170,3 +168,31 @@ def novo_gasto_fixo(request):
     else:
         form = GastoFixoForm()
     return render(request, 'novo_gasto_fixo.html', {"form": form, "nome": nome_usuario})
+
+
+@login_required
+def editar_gasto_fixo(request, pk):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    nome_usuario = request.user.get_full_name()
+
+    gasto = get_object_or_404(Gasto_Fixo, pk=pk)
+
+    if request.method == "POST":
+        form = GastoFixoForm(request.POST, instance=gasto)
+        if form.is_valid():
+            form.save()  # atualiza o mesmo registro
+            messages.success(request, "Gasto Fixo atualizado com sucesso!")
+            return redirect("gastos_fixos")
+    else:
+        form = GastoFixoForm(instance=gasto)  # <-- pré-preenche
+
+    return render(request, "novo_gasto_fixo.html", {
+        "form": form,
+        "nome": nome_usuario,
+        "editando": True,
+        "gasto": gasto,
+    })
+

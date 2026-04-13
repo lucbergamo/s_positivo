@@ -20,7 +20,7 @@
         <!-- Left side columns -->
         <div class="col-lg-12">
           <div class="row">
-            <a href="{% url 'novo_gasto_fixo'%}">NOVO GASTO</a>
+            <h5><a href="{% url 'novo_gasto_fixo'%}">INCLUI NOVA DESPESA FIXA</a></h5><br><br>
 
             <div class="card">
           <!-- Table with hoverable rows -->
@@ -28,18 +28,19 @@
                 <thead>
                   <tr>
                     <th scope="col">Nome</th>
-                    <th scope="col">Data</th>
-                    <th scope="col">Classificação</th>
+                    <th scope="col">Data Compensação</th>
                     <th scope="col">Valor</th>
-                    <th scope="col"></th>
+                    <th scope="col">Edição</th>
+                    <th scope="col">Exclusão</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for item in itens %}
                   <tr>
                     <th scope="row">{{item.nome }}</th>
-                    <td>{{item.data_gasto|date:"d/m/Y"}}</td>
-                    <td>R$ {{item.valor}}</td>
+                    <td>{{item.data_compensacao}}</td>
+                    <td>R$ {{item.valor_provisonado}}</td>
+                    <td><a href="{% url 'editar_gastos_fixos' item.id %}">Editar</a></td>
                     <td><form action="{% url 'excluir_gasto' item.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}
                       <button type="submit" 
