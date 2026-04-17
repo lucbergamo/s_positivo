@@ -125,19 +125,6 @@ def gastos_var(request):
         form = GastoForm()
     return render(request, 'gastos_var.html', {"form": form, "itens": dados, "mesatual": mesatual, "nome": nome_usuario})
 
-def excluir_gasto(request, pk):
-    if not request.user.is_authenticated:
-        messages.error(request, 'Usuário não logado')
-        return redirect('login')
-    form = GastoForm
-    inicio_mes, inicio_prox_mes = filtroMesAtual()
-    dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
-    gastoExcluir = get_object_or_404(Gasto,id=pk)
-    if request.method == "POST": # Por segurança, sempre use POST para deletar
-        gastoExcluir.delete()
-        messages.success(request, "Registro excluído com sucesso!")
-        return redirect('gastos_var')
-    return render(request, 'gastos_var.html', {"form": form, "itens": dados})
 
 @login_required   
 def gastos_fixos(request):
@@ -196,3 +183,36 @@ def editar_gasto_fixo(request, pk):
         "gasto": gasto,
     })
 
+
+# ========== Funções de Exclusão ===============
+def excluir_gasto_fixo(request, pk):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    form = GastoFixoForm
+    dados = Gasto_Fixo.objects.all().order_by('data_compensacao')
+    gastoExcluir = get_object_or_404(Gasto_Fixo,id=pk)
+    if request.method == "POST": # Por segurança, sempre use POST para deletar
+        gastoExcluir.delete()
+        messages.success(request, "Registro excluído com sucesso!")
+        return redirect('gastos_fixos')
+    return render(request, 'gastos_fixos.html', {"form": form, "itens": dados})
+
+def excluir_gasto(request, pk):
+
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    form = GastoForm
+    inicio_mes, inicio_prox_mes = filtroMesAtual()
+    dados = Gasto.objects.filter(data_gasto__gte=inicio_mes, data_gasto__lt=inicio_prox_mes).order_by('data_gasto')
+    gastoExcluir = get_object_or_404(Gasto,id=pk)
+    if request.method == "POST": # Por segurança, sempre use POST para deletar
+        gastoExcluir.delete()
+        messages.success(request, "Registro excluído com sucesso!")
+        return redirect('gastos_var')
+    return render(request, 'gastos_var.html', {"form": form, "itens": dados})
+
+# ========== Gerar compromissos ===============
+def gerar_compromissos():
+     pass
