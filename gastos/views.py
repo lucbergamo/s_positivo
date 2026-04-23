@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages, auth
+from decimal import Decimal
 from django.db.models import Sum
-from .models import Gasto, Gasto_Fixo
+from .models import Gasto, Gasto_Fixo, Compromissos
 from django.utils import timezone
-from .forms import GastoForm, LoginForms, GastoFixoForm
+from .forms import GastoForm, LoginForms, GastoFixoForm, CompromissoForm
 
 # ========== Funções de Data ===============
 def filtroMesAtual():
@@ -214,5 +215,17 @@ def excluir_gasto(request, pk):
     return render(request, 'gastos_var.html', {"form": form, "itens": dados})
 
 # ========== Gerar compromissos ===============
-def gerar_compromissos():
-     pass
+def gerar_compromissos(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+
+    obj = Compromissos.objects.create(
+            nome="Condominio",
+            data_compromisso=timezone.localdate(),
+            valor_provisonado=Decimal("437.00"),
+            # classificacao=...  # se for obrigatório
+        )
+    return redirect("gastos_fixos")
+    
+

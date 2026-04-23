@@ -1,5 +1,5 @@
 from django import forms
-from .models import Gasto, Gasto_Fixo
+from .models import Gasto, Gasto_Fixo, Compromissos
 
 
 class GastoForm(forms.ModelForm):
@@ -41,5 +41,15 @@ class GastoFixoForm(forms.ModelForm):
 
         widgets = {
             "data_compensacao": forms.NumberInput(attrs={"type": "number"}),
+            "valor_provisonado": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+        }
+
+class CompromissoForm(forms.ModelForm):
+    class Meta:
+        model = Compromissos
+        fields = ["nome", "data_compromisso", "classificacao", "valor_provisonado","valor_pago"]
+
+        widgets = {
+            "data_compromisso": forms.NumberInput(attrs={"type": "number"}),
             "valor_provisonado": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
         }
