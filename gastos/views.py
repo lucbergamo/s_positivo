@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages, auth
+from datetime import date
 from decimal import Decimal
 from django.db.models import Sum
 from .models import Gasto, Gasto_Fixo, Compromissos
@@ -219,13 +220,19 @@ def gerar_compromissos(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Usuário não logado')
         return redirect('login')
+    
+    gastosFixos = Gasto_Fixo.objects.all()
+    hoje = timezone.localdate()
 
-    obj = Compromissos.objects.create(
-            nome="Condominio",
-            data_compromisso=timezone.localdate(),
-            valor_provisonado=Decimal("437.00"),
-            # classificacao=...  # se for obrigatório
+    for gasto in gastosFixos:
+
+        obj = Compromissos.objects.create(
+                nome= gasto.nome,
+                data_compromisso=date(hoje.year, hoje.month, gasto.data_compensacao),
+                valor_provisonado=Decimal(gasto.valor_provisonado),
+                # classificacao=...  # se for obrigatório
         )
+    #Compromissos.objects.all().delete()
     return redirect("gastos_fixos")
     
 
