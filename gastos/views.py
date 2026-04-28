@@ -185,6 +185,17 @@ def editar_gasto_fixo(request, pk):
         "gasto": gasto,
     })
 
+@login_required
+def reg_gastos_fixos(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    mesatual = nomeMesAtual()
+    nome_usuario = request.user.get_full_name()
+    inicio_mes, inicio_prox_mes = filtroMesAtual()
+    dados = Compromissos.objects.filter(data_compromisso__gte=inicio_mes, data_compromisso__lt=inicio_prox_mes).order_by('data_compromisso')
+    return render(request, 'reg_gastos_fixos.html', { "nome": nome_usuario, "itens": dados})
 
 # ========== Funções de Exclusão ===============
 def excluir_gasto_fixo(request, pk):
