@@ -43,7 +43,7 @@
                     <td>{{item.data_compromisso}}</td>
                     <td>R$ {{item.valor_provisonado}}</td>
                     <td>R$ {{item.valor_pago}}</td>
-                    <td><a href="{% url 'editar_gastos_fixos' item.id %}">Registrar Pagamento</a></td>
+                    <td><a href="{% url 'reg_compromissos' item.id %}">Registrar Pagamento</a></td>
                     {% csrf_token %}
 
                   </form></td>

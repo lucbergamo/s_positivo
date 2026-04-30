@@ -79,7 +79,6 @@ def logout(request):
         auth.logout(request)
         return redirect('login')
 
-
 # ========== Funções de Relatório ===============
 def total_compras_mes_atual():
     hoje = timezone.now()
@@ -127,7 +126,6 @@ def gastos_var(request):
         form = GastoForm()
     return render(request, 'gastos_var.html', {"form": form, "itens": dados, "mesatual": mesatual, "nome": nome_usuario})
 
-
 @login_required   
 def gastos_fixos(request):
     if not request.user.is_authenticated:
@@ -158,7 +156,6 @@ def novo_gasto_fixo(request):
         form = GastoFixoForm()
     return render(request, 'novo_gasto_fixo.html', {"form": form, "nome": nome_usuario})
 
-
 @login_required
 def editar_gasto_fixo(request, pk):
     if not request.user.is_authenticated:
@@ -184,6 +181,19 @@ def editar_gasto_fixo(request, pk):
         "editando": True,
         "gasto": gasto,
     })
+
+@login_required
+def reg_gastos_fixos(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    mesatual = nomeMesAtual()
+    nome_usuario = request.user.get_full_name()
+    inicio_mes, inicio_prox_mes = filtroMesAtual()
+    dados = Compromissos.objects.filter(data_compromisso__gte=inicio_mes, data_compromisso__lt=inicio_prox_mes).order_by('data_compromisso')
+    return render(request, 'reg_gastos_fixos.html', { "nome": nome_usuario, "itens": dados})
+
 
 @login_required
 def reg_gastos_fixos(request):
@@ -226,7 +236,7 @@ def excluir_gasto(request, pk):
         return redirect('gastos_var')
     return render(request, 'gastos_var.html', {"form": form, "itens": dados})
 
-# ========== Gerar compromissos ===============
+# ========== Compromissos ===============
 def gerar_compromissos(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Usuário não logado')
@@ -245,5 +255,31 @@ def gerar_compromissos(request):
         )
     #Compromissos.objects.all().delete()
     return redirect("gastos_fixos")
+
+def reg_compromissos(request, pk):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Usuário não logado')
+        return redirect('login')
+    
+    nome_usuario = request.user.get_full_name()
+
+    compromisso = get_object_or_404(Compromissos, pk=pk)
+
+    if request.method == "POST":
+        form = CompromissoForm(request.POST, instance=compromisso)
+        if form.is_valid():
+            form.save()  # atualiza o mesmo registro
+            messages.success(request, "Compromisso da despesa registrado com sucesso!")
+            return redirect("reg_gastos_fixos")
+    else:
+        form = CompromissoForm(instance=compromisso)  # <-- pré-preenche
+
+    return render(request, "novo_gasto_fixo.html", {
+        "form": form,
+        "nome": nome_usuario,
+        "editando": True,
+        "gasto": compromisso,
+    })
+    
     
 
